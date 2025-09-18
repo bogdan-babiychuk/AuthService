@@ -4,7 +4,7 @@ from fastapi import Depends, HTTPException, Request
 from src.auth.jwt import Auth
 
 
-async def get_token(request: Request)-> str:
+async def get_token(request: Request) -> str:
     """Извлекает JWT из cookie запроса.
 
     Поднимает 401, если токен отсутствует.
@@ -15,10 +15,11 @@ async def get_token(request: Request)-> str:
     return token
 
 
-async def get_payload(token:str = Depends(get_token)):
+async def get_payload(token: str = Depends(get_token)):
     """Декодирует JWT и возвращает payload."""
     payload = Auth().decode_token(token)
     return payload
+
 
 UserTokenDep = Annotated[str, Depends(get_token)]
 PayloadDep = Annotated[dict, Depends(get_payload)]

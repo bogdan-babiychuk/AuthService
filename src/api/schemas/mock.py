@@ -17,5 +17,3 @@ class Customer(BaseModel):
     id: int = Field(ge=1)
     email: EmailStr
     full_name: str
-
-

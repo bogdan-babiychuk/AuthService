@@ -1,12 +1,14 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Callable
 
+
 class UnitOfWork:
     """Единица работы (Unit of Work) для управления транзакцией.
 
     Создаёт сессию при входе в контекст, коммитит при успехе
     и делает откат при ошибке, затем закрывает сессию.
     """
+
     def __init__(self, session_factory: callable):
         self.session_factory = session_factory
         self.session: AsyncSession | None = None

@@ -14,6 +14,7 @@ class User(Base):
 
     Содержит поля идентификатора, UUID, ФИО, email, пароль, роль и статус.
     """
+
     __tablename__ = "users"
 
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -25,6 +26,5 @@ class User(Base):
     surname: Mapped[str] = mapped_column(String(length=50), nullable=False)
     email: Mapped[str] = mapped_column(String(length=255), nullable=False, unique=True)
     password: Mapped[str] = mapped_column(String(length=255), nullable=False)
-    role: Mapped[str] = mapped_column(nullable=false, default=UserRole.SIMPLE_USER)  
+    role: Mapped[str] = mapped_column(nullable=false, default=UserRole.SIMPLE_USER)
     is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
-

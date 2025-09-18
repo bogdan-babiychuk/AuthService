@@ -17,6 +17,7 @@ from src.db.uow import UnitOfWork
 
 router = APIRouter()
 
+
 @router.post(
     "/",
     summary="Регистрация новых пользователей",
@@ -32,7 +33,9 @@ router = APIRouter()
                 }
             },
         },
-        status.HTTP_400_BAD_REQUEST: {"description": "Ошибка валидации или пользователь уже существует"},
+        status.HTTP_400_BAD_REQUEST: {
+            "description": "Ошибка валидации или пользователь уже существует"
+        },
     },
 )
 async def register_user(schema: CreateUserSchema):
@@ -41,13 +44,11 @@ async def register_user(schema: CreateUserSchema):
         async with UnitOfWork(get_async_session) as uow:
             service = UserService(uow)
             await service.register_user(schema)
-        return {status.HTTP_201_CREATED: 'Пользватель успешно зарегистрирован'}
-    
+        return {status.HTTP_201_CREATED: "Пользватель успешно зарегистрирован"}
+
     except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e)
-        )
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+
 
 @router.post(
     "/login",
@@ -57,16 +58,15 @@ async def register_user(schema: CreateUserSchema):
         status.HTTP_201_CREATED: {
             "description": "Успешная авторизация",
             "content": {
-                "application/json": {
-                    "example": {"access_token": "jwt_token_here"}
-                }
+                "application/json": {"example": {"access_token": "jwt_token_here"}}
             },
         },
-        status.HTTP_400_BAD_REQUEST: {"description": "Неверные данные или пользователь не найден"},
+        status.HTTP_400_BAD_REQUEST: {
+            "description": "Неверные данные или пользователь не найден"
+        },
     },
 )
-async def login_user(data: LoginUserSchema,
-                     response: Response):
+async def login_user(data: LoginUserSchema, response: Response):
     """Аутентификация пользователя и установка JWT в cookie."""
     try:
         async with UnitOfWork(get_async_session) as uow:
@@ -74,10 +74,7 @@ async def login_user(data: LoginUserSchema,
             token = await service.login_user(data=data, response=response)
         return token
     except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e)
-        )
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
 
 @router.post(
@@ -89,9 +86,7 @@ async def login_user(data: LoginUserSchema,
         status.HTTP_200_OK: {
             "description": "Вы успешно вышли из системы",
             "content": {
-                "application/json": {
-                    "example": {"200": "Вы успешно вышли из системы"}
-                }
+                "application/json": {"example": {"200": "Вы успешно вышли из системы"}}
             },
         }
     },
@@ -99,37 +94,30 @@ async def login_user(data: LoginUserSchema,
 async def logout_user(response: Response):
     """Выход пользователя: удаление JWT из cookie."""
     response.delete_cookie(
-        key="access_token",
-        httponly=True,
-        secure=False,    
-        samesite="lax"
+        key="access_token", httponly=True, secure=False, samesite="lax"
     )
     return {status.HTTP_200_OK: "Вы успешно вышли из системы"}
 
 
-
 @router.patch(
-        "/password",
-        summary="Изменить Пароль",
-        description="Позволяет любому пользователю изменить собственный пароль",
-        responses={
-            status.HTTP_200_OK: {
-                "description": "Пароль успешно изменён",
-                "content": {
-                    "application/json": {
-                        "example": {
-                            "200": "Пароль пользователя успешно изменён"
-                        }
-                    }
-                },
+    "/password",
+    summary="Изменить Пароль",
+    description="Позволяет любому пользователю изменить собственный пароль",
+    responses={
+        status.HTTP_200_OK: {
+            "description": "Пароль успешно изменён",
+            "content": {
+                "application/json": {
+                    "example": {"200": "Пароль пользователя успешно изменён"}
+                }
             },
-            status.HTTP_400_BAD_REQUEST: {"description": "Неверный пароль"},
-            status.HTTP_403_FORBIDDEN: {"description": "Не предоставлен токен"},
-        }
+        },
+        status.HTTP_400_BAD_REQUEST: {"description": "Неверный пароль"},
+        status.HTTP_403_FORBIDDEN: {"description": "Не предоставлен токен"},
+    },
 )
 async def change_user_password(
-    request: ChangePasswordUserSchema,
-    payload:  Annotated[dict, Depends(get_payload)]
+    request: ChangePasswordUserSchema, payload: Annotated[dict, Depends(get_payload)]
 ):
     """Смена пароля текущего пользователя."""
     try:
@@ -138,15 +126,14 @@ async def change_user_password(
             await service.change_user_password(data=request, payload=payload)
         return {status.HTTP_200_OK: "Пароль пользователя успешно изменён"}
     except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e))
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+
 
 @router.patch(
     "/me",
     summary="Редактирование профиля пользователя",
     description="Эндпоинт для изменения имени, фамилии и отчества текущего пользователя",
-    status_code=status.HTTP_200_OK
+    status_code=status.HTTP_200_OK,
 )
 async def update_profile(
     data: UserUpdateSchema,
@@ -159,9 +146,8 @@ async def update_profile(
             await service.update_user_profile(data=data, payload=payload)
         return {"message": "Профиль успешно обновлён"}
     except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e))  
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+
 
 @router.patch(
     "/admin",
@@ -178,31 +164,35 @@ async def update_profile(
                 }
             },
         },
-        status.HTTP_400_BAD_REQUEST: {"description": "Неверный пароль или пользователь уже админ"},
+        status.HTTP_400_BAD_REQUEST: {
+            "description": "Неверный пароль или пользователь уже админ"
+        },
         status.HTTP_403_FORBIDDEN: {"description": "Не предоставлен токен"},
     },
 )
 async def change_own_role(
-    response: Response,
-    payload: Annotated[dict, Depends(get_payload)],
-    password: str
+    response: Response, payload: Annotated[dict, Depends(get_payload)], password: str
 ):
     if payload["role"] != UserRole.ADMIN:
         if password == settings.ADMIN_PASSWORD:
             async with UnitOfWork(get_async_session) as uow:
                 service = UserService(uow)
-                await service.change_user_role(payload, UserRole.ADMIN, response=response)
-            
-            return {status.HTTP_200_OK: f"Админка успешно добавлена!В аккаунт необходимо зайти заново"}
-            
+                await service.change_user_role(
+                    payload, UserRole.ADMIN, response=response
+                )
+
+            return {
+                status.HTTP_200_OK: f"Админка успешно добавлена!В аккаунт необходимо зайти заново"
+            }
+
         else:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Неверный пароль для админа"
-        )
+                detail="Неверный пароль для админа",
+            )
     raise HTTPException(
-        status_code=status.HTTP_400_BAD_REQUEST,
-        detail="У вас уже активна роль админа")
+        status_code=status.HTTP_400_BAD_REQUEST, detail="У вас уже активна роль админа"
+    )
 
 
 @router.delete(
@@ -219,19 +209,21 @@ async def change_own_role(
                 }
             },
         },
-        status.HTTP_400_BAD_REQUEST: {"description": "Пользователь не найден или попытка удаления чужого аккаунта"},
+        status.HTTP_400_BAD_REQUEST: {
+            "description": "Пользователь не найден или попытка удаления чужого аккаунта"
+        },
     },
 )
-async def soft_delete_user(payload: Annotated[dict, Depends(get_payload)],
-                      response: Response):
+async def soft_delete_user(
+    payload: Annotated[dict, Depends(get_payload)], response: Response
+):
     """Мягкое удаление текущего пользователя (деактивация аккаунта)."""
     try:
         async with UnitOfWork(get_async_session) as uow:
             service = UserService(uow)
-            await service.delete_user(response=response, payload=payload, mode=ModeDelete.SOFT)
+            await service.delete_user(
+                response=response, payload=payload, mode=ModeDelete.SOFT
+            )
         return {status.HTTP_200_OK: f"Аккаунт {payload["email"]} успешно удален"}
-    except Exception as e: 
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e)
-        )
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))

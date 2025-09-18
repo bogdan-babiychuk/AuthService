@@ -6,12 +6,14 @@ import jwt
 
 from src.config import settings
 
+
 class Auth:
     """Утилиты аутентификации: хеширование паролей и работа с JWT.
 
     - Хеширует и проверяет пароли через bcrypt
     - Создаёт и декодирует JWT-токены доступа
     """
+
     pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
     def verify_password(self, plain_password, hashed_password):
@@ -43,9 +45,13 @@ class Auth:
             str: Закодированный JWT-токен.
         """
         to_encode = data.copy()
-        expire = datetime.now() + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+        expire = datetime.now() + timedelta(
+            minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES
+        )
         to_encode.update({"exp": expire})
-        encoded_jwt = jwt.encode(to_encode, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
+        encoded_jwt = jwt.encode(
+            to_encode, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM
+        )
         return encoded_jwt
 
     def decode_token(self, token):
@@ -54,9 +60,10 @@ class Auth:
         Поднимает HTTPException(401), если токен недействителен/просрочен.
         """
         try:
-            return jwt.decode(token, settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM])
+            return jwt.decode(
+                token, settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM]
+            )
         except Exception:
-            raise HTTPException(status_code=401, detail="Could not validate credentials")
-
-
-
+            raise HTTPException(
+                status_code=401, detail="Could not validate credentials"
+            )

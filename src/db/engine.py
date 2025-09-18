@@ -12,7 +12,6 @@ def get_async_session() -> AsyncSession:
     return async_session()
 
 
-
 async def async_run_db():
     """Создаёт все таблицы в БД (инициализация схемы)."""
     async with engine.begin() as conn:

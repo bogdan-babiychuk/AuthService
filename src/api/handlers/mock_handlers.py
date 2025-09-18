@@ -20,12 +20,15 @@ MOCK_ORDERS: list[Order] = [
 ]
 
 
-
 @router.get("/products", response_model=List[Product], summary="Mock: список товаров")
 async def list_products(payload: Annotated[dict, Depends(get_payload)]):
     return MOCK_PRODUCTS
 
 
-@router.get("/orders", response_model=List[Order], summary="Mock: список заказов, доступно только аутентифицированным пользователям")
+@router.get(
+    "/orders",
+    response_model=List[Order],
+    summary="Mock: список заказов, доступно только аутентифицированным пользователям",
+)
 async def list_orders(payload: Annotated[dict, Depends(get_payload)]):
     return MOCK_ORDERS
