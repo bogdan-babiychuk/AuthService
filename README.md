@@ -13,12 +13,7 @@
 poetry install
 ```
 
-2) (Опционально) Установка dev-зависимостей, если они будут добавлены в проект
-```bash
-poetry install --with dev
-```
-
-3) Настройка окружения
+2) Настройка окружения
 Создайте файл `.env` в корне проекта (на уровне с `src/`) и перенесите в него переменные из .env.example
 ```env
 JWT_SECRET_KEY=super_secret_key
@@ -26,7 +21,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES=30
 ADMIN_PASSWORD=123
 ```
 
-4) Запуск приложения
+3) Запуск приложения
 ```bash
 poetry run uvicorn main:create --factory --reload
 ```
