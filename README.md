@@ -8,9 +8,9 @@
 
 ## Установка и запуск (Poetry)
 
-1) Клонирование и установка зависимостей
+1) Клонирование и установка зависимостей 
 ```bash
-poetry install
+poetry install --without dev
 ```
 
 2) Настройка окружения
@@ -26,6 +26,12 @@ ADMIN_PASSWORD=123
 poetry run uvicorn main:create --factory --reload
 ```
 
+4) (Опционально)
+Если есть ошибка, то возможно не правильно поставился bcrypt
+```bash
+poetry update passlib bcrypt
+poetry add "bcrypt==4.0.1"
+```
 Документация Swagger: http://localhost:8000/api/docs
 
 Первый запуск автоматически создаст таблицы в SQLite (`./test.db`).

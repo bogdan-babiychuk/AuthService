@@ -1,6 +1,6 @@
 from pyexpat import model
 import string
-from pydantic import BaseModel, EmailStr, Field, field_validator, model_validator
+from pydantic import BaseModel, EmailStr, Field, field_serializer, field_validator, model_validator
 
 from src.auth.jwt import Auth
 

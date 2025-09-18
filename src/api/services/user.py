@@ -45,9 +45,11 @@ class UserService:
         existing = await self.user_repository(session=self.uow.session).get_one_or_none(
             email=data.email
         )
-        if existing:
+        if existing and existing.is_active:
             raise ValueError("Пользователь с таким email уже существует")
-
+        
+        if existing and not existing.is_active:
+            raise ValueError("Пользователь с таким email был деактивирован")
         user_data = data.hash_password()
         user = await self.user_repository(session=self.uow.session).add(data=user_data)
         return user
@@ -103,7 +105,7 @@ class UserService:
                 if not existing:
                     raise ValueError("Пользователь не найден")
 
-                if payload["email"] == data.email:
+                if payload["email"] != existing.email:
                     raise ValueError("Вы можете удалить только свой аккаунт")
                 existing.is_active = False
                 response.delete_cookie(
